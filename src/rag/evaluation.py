@@ -24,6 +24,7 @@ Usage::
 import json
 import os
 import sys
+import time
 import datetime
 from pathlib import Path
 from typing import Any
@@ -192,13 +193,27 @@ def judge_answer(
         retrieved_sources=retrieved_src_str,
     )
 
-    response = client.messages.create(
-        model=model,
-        max_tokens=512,
-        temperature=0,  # deterministic grading
-        system=JUDGE_SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": prompt}],
-    )
+    # Retry up to 5 times on rate-limit errors with exponential backoff.
+    # Multiple concurrent eval runs (smoke ablations for L10/L11/L12) share
+    # the same org rate limit, making 429s likely when runs overlap.
+    last_exc = None
+    for attempt in range(5):
+        try:
+            response = client.messages.create(
+                model=model,
+                max_tokens=512,
+                temperature=0,  # deterministic grading
+                system=JUDGE_SYSTEM_PROMPT,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            break
+        except anthropic.RateLimitError as exc:
+            last_exc = exc
+            wait = 30 * (attempt + 1)   # 30s, 60s, 90s, 120s, 150s
+            print(f"    [rate limit] waiting {wait}s before retry {attempt + 1}/5…")
+            time.sleep(wait)
+    else:
+        raise last_exc  # all retries exhausted
 
     raw = response.content[0].text.strip()
 
