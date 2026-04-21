@@ -55,6 +55,8 @@ The lessons are written for a learner new to AI/ML. When generating lesson conte
 - Run RAGAS eval: `python lessons/08-ragas/run_ragas_baseline.py`
 - Run RAGAS smoke eval: `python lessons/08-ragas/run_ragas_smoke.py`
 - Compare eval methods: `python lessons/08-ragas/compare_eval_methods.py`
+- Run smoke ablation: `python lessons/09-retrieval-quality/smoke_ablation.py`
+- Run full eval: `python lessons/09-retrieval-quality/full_eval.py`
 
 ## Files I Should Never Edit
 

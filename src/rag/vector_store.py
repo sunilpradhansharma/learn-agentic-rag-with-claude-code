@@ -196,6 +196,263 @@ class VectorStore:
 
 
 # ---------------------------------------------------------------------------
+# HybridStore  (added in Lesson 9)
+# ---------------------------------------------------------------------------
+
+# Lazy import so that vector_store.py can be used in Lessons 5-8 without
+# rank_bm25 installed. HybridStore raises a clear error at instantiation
+# time if the dependency is missing.
+try:
+    from rank_bm25 import BM25Okapi as _BM25Okapi
+except ImportError:
+    _BM25Okapi = None  # type: ignore[assignment]
+
+
+class HybridStore:
+    """Dense + sparse (BM25) retrieval, fused via reciprocal rank fusion (RRF).
+
+    Dense retrieval (Chroma) captures meaning and paraphrases. Sparse
+    retrieval (BM25) captures exact term matches — product names, numbers,
+    SEC filing IDs — that semantic embeddings often wash out. Combining
+    both with RRF covers more failure modes than either alone.
+
+    HybridStore does NOT duplicate the Chroma data. It wraps an existing
+    VectorStore and builds the BM25 index lazily from that same corpus.
+
+    Usage::
+
+        store = HybridStore(alpha=0.5)
+        results = store.search_hybrid("Apple executive compensation", k=5)
+        for r in results:
+            print(r["rrf_score"], r["dense_rank"], r["bm25_rank"])
+    """
+
+    # Conventional RRF constant (Robertson & Zaragoza 2009).
+    # Values between 60 and 300 are typical; 60 is the most common default.
+    _RRF_K = 60
+
+    def __init__(
+        self,
+        collection_name: str = "sec_filings",
+        alpha: float = 0.5,
+    ) -> None:
+        """Set up the hybrid retriever.
+
+        Args:
+            collection_name: Chroma collection to wrap (same name as VectorStore default).
+            alpha: Dense weight in [0, 1].
+                   alpha=1.0 → pure dense (equivalent to VectorStore.search).
+                   alpha=0.0 → pure BM25.
+                   alpha=0.5 → equal weight (recommended starting point).
+        """
+        if _BM25Okapi is None:
+            raise ImportError(
+                "rank-bm25 is required for HybridStore. "
+                "Run: pip install -r requirements.txt"
+            )
+
+        # Wrap VectorStore for dense retrieval. Shares the Chroma collection —
+        # no data is duplicated, and any chunk added to VectorStore is
+        # automatically visible here.
+        self.store = VectorStore(collection_name=collection_name)
+        self.alpha = alpha
+
+        # BM25 index is built lazily on the first search_bm25() call.
+        # Building it loads all chunk texts into memory and tokenizes them,
+        # which takes ~0.5 s for 487 chunks. Lazy loading keeps __init__ fast.
+        self._bm25_index = None
+        self._bm25_ids: list[str] = []
+        self._bm25_docs: list[str] = []
+        self._bm25_metadata: list[dict] = []
+
+    # ------------------------------------------------------------------
+    # BM25 index construction
+    # ------------------------------------------------------------------
+
+    def _build_bm25_index(self) -> None:
+        """Load every document from Chroma and build a BM25Okapi index.
+
+        Called automatically on the first search_bm25() call.
+        After this, self._bm25_index is non-None and subsequent calls
+        skip this step entirely.
+        """
+        print("  Building BM25 index from corpus (first call only) …", flush=True)
+
+        # Chroma's .get() with no filter returns the entire collection.
+        # We need "documents" (the raw text strings) and "metadatas"
+        # (source_file, chunk_id, token_count).
+        result = self.store._collection.get(include=["documents", "metadatas"])
+
+        self._bm25_ids = result["ids"]            # Chroma IDs, e.g. "apple_10k.txt::42"
+        self._bm25_docs = result["documents"]     # plain text strings
+        self._bm25_metadata = result["metadatas"] # source_file, chunk_id, token_count
+
+        # Tokenize: lowercase + whitespace split.
+        # BM25Okapi expects a list[list[str]] (one token list per document).
+        tokenized_corpus = [doc.lower().split() for doc in self._bm25_docs]
+
+        self._bm25_index = _BM25Okapi(tokenized_corpus)
+        print(f"  BM25 index ready: {len(self._bm25_ids)} documents.", flush=True)
+
+    # ------------------------------------------------------------------
+    # Individual retrieval methods
+    # ------------------------------------------------------------------
+
+    def search_dense(self, query: str, k: int = 10) -> list[dict]:
+        """Dense (semantic) retrieval via the wrapped VectorStore.
+
+        Args:
+            query: Natural-language question.
+            k:     Number of results to return.
+
+        Returns:
+            Same format as VectorStore.search(): text, source_file,
+            chunk_id, similarity_score.
+        """
+        return self.store.search(query, k=k)
+
+    def search_bm25(self, query: str, k: int = 10) -> list[dict]:
+        """Sparse (BM25 term-frequency) retrieval.
+
+        BM25 scores each document by how many query terms it contains,
+        weighted by term rarity across the corpus. A chunk with exact
+        keyword matches scores high even if it is semantically distant.
+
+        Args:
+            query: Natural-language question (tokenized with same method as index).
+            k:     Number of results to return.
+
+        Returns:
+            Top-k chunks sorted by bm25_score descending, each with:
+            text, source_file, chunk_id, bm25_score.
+        """
+        if self._bm25_index is None:
+            self._build_bm25_index()
+
+        # Use the same tokenization as indexing to ensure term overlap.
+        tokenized_query = query.lower().split()
+
+        # get_scores returns a float array of length = corpus size.
+        scores = self._bm25_index.get_scores(tokenized_query)
+
+        # argsort ascending; take the last k for the top-k scores.
+        top_indices = np.argsort(scores)[::-1][:k]
+
+        results = []
+        for idx in top_indices:
+            results.append(
+                {
+                    "text": self._bm25_docs[idx],
+                    "source_file": self._bm25_metadata[idx]["source_file"],
+                    "chunk_id": self._bm25_metadata[idx]["chunk_id"],
+                    "bm25_score": round(float(scores[idx]), 6),
+                }
+            )
+        return results
+
+    # ------------------------------------------------------------------
+    # Hybrid fusion
+    # ------------------------------------------------------------------
+
+    def search_hybrid(
+        self,
+        query: str,
+        k: int = 10,
+        fetch_k: int = 20,
+    ) -> list[dict]:
+        """Hybrid retrieval via reciprocal rank fusion (RRF).
+
+        Algorithm:
+          1. Retrieve fetch_k candidates from dense search.
+          2. Retrieve fetch_k candidates from BM25 search.
+          3. For each unique chunk, compute its RRF score:
+               rrf_score = alpha * (1 / (RRF_K + dense_rank))
+                         + (1-alpha) * (1 / (RRF_K + bm25_rank))
+             If a chunk appears in only one result set, the missing term
+             contributes 0 (equivalent to infinite rank).
+          4. Sort by rrf_score descending, return top-k.
+
+        Chunks that appear in BOTH retrievers get a boost from both terms —
+        they are the high-confidence candidates.
+
+        Args:
+            query:   Natural-language question.
+            k:       Final number of results after fusion.
+            fetch_k: Candidates to retrieve from each retriever before fusion.
+                     Higher values give the fusion more to work with but add latency.
+
+        Returns:
+            Top-k chunks sorted by rrf_score descending, each with:
+            text, source_file, chunk_id, similarity_score (dense),
+            rrf_score, dense_rank (int or None), bm25_rank (int or None).
+        """
+        dense_results = self.search_dense(query, k=fetch_k)
+        bm25_results = self.search_bm25(query, k=fetch_k)
+
+        # Index each result set by (source_file, chunk_id) for O(1) lookup.
+        # Value is (1-indexed rank, chunk dict).
+        dense_map: dict[tuple, tuple] = {}
+        for rank, chunk in enumerate(dense_results, start=1):
+            key = (chunk["source_file"], chunk["chunk_id"])
+            dense_map[key] = (rank, chunk)
+
+        bm25_map: dict[tuple, tuple] = {}
+        for rank, chunk in enumerate(bm25_results, start=1):
+            key = (chunk["source_file"], chunk["chunk_id"])
+            bm25_map[key] = (rank, chunk)
+
+        # Take the union of all chunks from both retrievers.
+        all_keys = set(dense_map) | set(bm25_map)
+
+        scored: list[dict] = []
+        for key in all_keys:
+            dense_entry = dense_map.get(key)
+            bm25_entry = bm25_map.get(key)
+
+            dense_rank = dense_entry[0] if dense_entry is not None else None
+            bm25_rank = bm25_entry[0] if bm25_entry is not None else None
+
+            # Compute each retriever's contribution to the RRF score.
+            rrf_dense = (
+                self.alpha / (self._RRF_K + dense_rank)
+                if dense_rank is not None
+                else 0.0
+            )
+            rrf_bm25 = (
+                (1.0 - self.alpha) / (self._RRF_K + bm25_rank)
+                if bm25_rank is not None
+                else 0.0
+            )
+
+            # Use the dense chunk as the base (it has full text + similarity_score).
+            # Fall back to BM25 chunk for chunks that only BM25 found.
+            base_chunk = (dense_entry or bm25_entry)[1]
+
+            scored.append(
+                {
+                    "text": base_chunk.get("text", ""),
+                    "source_file": base_chunk["source_file"],
+                    "chunk_id": base_chunk["chunk_id"],
+                    "similarity_score": base_chunk.get("similarity_score", 0.0),
+                    "rrf_score": round(rrf_dense + rrf_bm25, 6),
+                    "dense_rank": dense_rank,
+                    "bm25_rank": bm25_rank,
+                }
+            )
+
+        scored.sort(key=lambda x: x["rrf_score"], reverse=True)
+        return scored[:k]
+
+    # ------------------------------------------------------------------
+    # Passthrough
+    # ------------------------------------------------------------------
+
+    def count(self) -> int:
+        """Delegate to the underlying VectorStore."""
+        return self.store.count()
+
+
+# ---------------------------------------------------------------------------
 # Demo
 # ---------------------------------------------------------------------------
 
@@ -242,5 +499,36 @@ if __name__ == "__main__":
                 f"  [{i}] score={r['similarity_score']:.4f}  "
                 f"file={r['source_file']}  "
                 f"text={r['text'][:120]!r}"
+            )
+        print()
+
+    # ---------------------------------------------------------------------------
+    # HybridStore demo (added in Lesson 9)
+    # ---------------------------------------------------------------------------
+    print("=" * 70)
+    print("HybridStore demo — hybrid search showing dense_rank vs bm25_rank")
+    print("=" * 70)
+    print()
+    print("Look for chunks where dense_rank and bm25_rank diverge widely.")
+    print("These are exactly the cases where hybrid adds value over either alone.\n")
+
+    hybrid_store = HybridStore(alpha=0.5)
+
+    hybrid_queries = [
+        "Apple executive compensation",
+        "Tesla Fremont manufacturing",
+        "Microsoft Intelligent Cloud segment revenue",
+    ]
+
+    for query in hybrid_queries:
+        print(f"Query: {query!r}")
+        results = hybrid_store.search_hybrid(query, k=5)
+        for i, r in enumerate(results, 1):
+            # Show "dense=--" when the chunk did not appear in dense results.
+            d_str = f"dense={r['dense_rank']:>2}" if r["dense_rank"] else "dense=--"
+            b_str = f"bm25={r['bm25_rank']:>2}" if r["bm25_rank"] else "bm25=--"
+            print(
+                f"  [{i}] rrf={r['rrf_score']:.5f}  {d_str}  {b_str}  "
+                f"{r['source_file']}  {r['text'][:90]!r}"
             )
         print()

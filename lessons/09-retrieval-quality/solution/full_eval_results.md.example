@@ -1,0 +1,53 @@
+# Full Eval Results — Lesson 9 (example)
+
+> **Note:** These are example results illustrating the expected shape
+> and magnitude of improvements. Your actual numbers will vary.
+
+Generated: 2026-04-21T21:30:00.000000Z
+Winner: D full  |  Config: full
+Pipeline params: {'use_hybrid': True, 'use_rerank': True, 'k': 5, 'fetch_k': 20, 'alpha': 0.5}
+
+## RAGAS Metrics
+
+| Metric | Baseline | Improved | Delta | % Change |
+|--------|:--------:|:--------:|:-----:|:--------:|
+| Faithfulness | 0.926 | 0.941 | +0.015 | +1.6% |
+| Ans. Relevancy | 0.689 | 0.712 | +0.023 | +3.3% |
+| Ctx. Precision | 0.554 | 0.681 | +0.127 | +22.9% |
+| Ctx. Recall | 0.517 | 0.624 | +0.107 | +20.7% |
+| **L7 Pass Rate** | 0.767 | 0.900 | +0.133 | +17.4% |
+
+## Questions Fixed
+
+**4 questions** moved from FAIL/PARTIAL to PASS:
+
+- [q014] PARTIAL → PASS: Compare Apple's 2023 revenue to Tesla's 2023 revenue.
+- [q015] PARTIAL → PASS: Which company had higher total revenue in 2023: Microsoft or Apple?
+- [q024] PARTIAL → PASS: What were Apple's revenue figures broken down by product category?
+- [q026] PARTIAL → PASS: How did Microsoft's Intelligent Cloud segment perform...
+
+## Regressions
+
+**0 questions** moved from PASS to FAIL/PARTIAL:
+
+- (none)
+
+## Interpretation Notes
+
+- **Context precision and recall both improved significantly** (~+0.10 to +0.15),
+  confirming that hybrid+rerank addresses the retrieval bottleneck identified
+  in Lesson 8.
+- **Faithfulness stayed high** (~0.94), confirming that the improved retrieval
+  is not surfacing noise that leads to hallucinations.
+- **All comparative questions (q014, q015) moved from PARTIAL to PASS**,
+  closing the `comparative_failure` class from `docs/failure-log.md`.
+  Hybrid search successfully retrieved both companies' revenue chunks in a
+  single query.
+- **Zero regressions** — the improvement is monotone on this corpus.
+
+## Typical Variance
+
+Full eval numbers on 30 questions are meaningfully more stable than smoke
+results on 10. If your smoke winner had a RAGAS mean ~0.05 higher than the
+baseline, expect the full eval to show a similar or slightly smaller delta
+(10-question samples tend to slightly overestimate improvements).

@@ -1,0 +1,49 @@
+# Smoke Ablation Results — Lesson 9 (example)
+
+> **Note:** These are example results illustrating the expected shape of
+> output. Your actual numbers will vary by ±0.05–0.10 due to LLM judge
+> non-determinism and the small smoke-set size (10 questions).
+
+Generated: 2026-04-21T20:00:00.000000Z
+Smoke set: 10 questions — q001, q002, q009, q014, q015, q018, q019, q022, q024, q028
+Categories: comparative, factual_lookup, list_extraction, multi_hop, numerical, refusal_required, risk_analysis
+
+## Configuration Summary
+
+| Label | Pipeline | Hybrid | Rerank | alpha | fetch_k |
+|-------|----------|:------:|:------:|:-----:|:-------:|
+| A naive  | NaiveRAG    | ✗ | ✗ | —   | —  |
+| B hybrid | ImprovedRAG | ✓ | ✗ | 0.5 | 20 |
+| C rerank | ImprovedRAG | ✗ | ✓ | —   | 20 |
+| D full   | ImprovedRAG | ✓ | ✓ | 0.5 | 20 |
+
+## Results
+
+| Config | L7 Pass | Faithful. | Ans.Rel. | Ctx.Prec. | Ctx.Rec. | RAGAS Mean |
+|--------|:-------:|:---------:|:--------:|:---------:|:--------:|:----------:|
+| A naive  | 0.700 | 0.933 | 0.578 | 0.445 | 0.383 | 0.585 |
+| B hybrid | 0.700 | 0.941 | 0.602 | 0.478 | 0.441 | 0.616 |
+| C rerank | 0.800 | 0.953 | 0.619 | 0.567 | 0.409 | 0.637 |
+| **D full** ✓ | 0.900 | 0.961 | 0.631 | 0.589 | 0.462 | 0.661 |
+
+## Winner
+
+**D full** — RAGAS mean and L7 pass rate agree
+
+RAGAS mean: 0.661  |  L7 pass rate: 0.900
+
+## Interpretation Notes
+
+- Config D wins on both criteria. The pattern **prec(C) > prec(B)** and
+  **recall(B) > recall(C)** is typical: reranking improves retrieval
+  *quality* (precision), hybrid improves retrieval *completeness* (recall).
+  Together they improve both.
+- The L7 jump from 0.700 (A/B) to 0.800 (C) to 0.900 (D) shows the
+  two techniques are complementary, not redundant.
+- Smoke set numbers are noisy (10 questions). Confirm on full 30-question
+  eval before reporting as a canonical improvement.
+
+## Next Step
+
+Run `lessons/09-retrieval-quality/full_eval.py` to compare baseline vs
+winner on the full 30-question golden set.

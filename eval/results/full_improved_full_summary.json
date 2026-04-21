@@ -1,0 +1,63 @@
+{
+  "run_name": "full_improved_full",
+  "generated": "2026-04-21T16:34:56.915525Z",
+  "total": 30,
+  "grade_counts": {
+    "PASS": 25,
+    "PARTIAL": 5,
+    "FAIL": 0,
+    "UNKNOWN": 0
+  },
+  "pass_rate": 0.833,
+  "partial_rate": 0.167,
+  "fail_rate": 0.0,
+  "category_counts": {
+    "factual_lookup": {
+      "PASS": 8,
+      "PARTIAL": 0,
+      "FAIL": 0,
+      "UNKNOWN": 0
+    },
+    "numerical": {
+      "PASS": 5,
+      "PARTIAL": 0,
+      "FAIL": 0,
+      "UNKNOWN": 0
+    },
+    "comparative": {
+      "PASS": 1,
+      "PARTIAL": 3,
+      "FAIL": 0,
+      "UNKNOWN": 0
+    },
+    "list_extraction": {
+      "PASS": 4,
+      "PARTIAL": 0,
+      "FAIL": 0,
+      "UNKNOWN": 0
+    },
+    "risk_analysis": {
+      "PASS": 1,
+      "PARTIAL": 1,
+      "FAIL": 0,
+      "UNKNOWN": 0
+    },
+    "multi_hop": {
+      "PASS": 3,
+      "PARTIAL": 1,
+      "FAIL": 0,
+      "UNKNOWN": 0
+    },
+    "refusal_required": {
+      "PASS": 3,
+      "PARTIAL": 0,
+      "FAIL": 0,
+      "UNKNOWN": 0
+    }
+  },
+  "failure_modes": {
+    "partial_retrieval": 4,
+    "comparative_failure": 1
+  },
+  "detail_path": "/Users/sucandra_dasa/Documents/Sucandra-Mac/github/learn-agentic-rag-with-claude-code/eval/results/full_improved_full_detail.jsonl"
+}
