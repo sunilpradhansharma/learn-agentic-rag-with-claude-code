@@ -1,0 +1,14 @@
+venv/
+__pycache__/
+*.pyc
+.env
+.DS_Store
+.vscode/
+.idea/
+eval/results/*.json
+*.db
+chroma_db/
+.pytest_cache/
+dist/
+build/
+*.egg-info/

@@ -1,0 +1,7 @@
+# Dependencies added progressively. See each lesson README for what's new.
+anthropic>=0.39.0
+python-dotenv>=1.0.0
+
+# Added in Lesson 3
+sentence-transformers>=2.2.0
+numpy>=1.24.0
