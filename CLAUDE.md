@@ -15,6 +15,10 @@ A 20-lesson course repository that teaches Claude Code and Agentic RAG together 
 - `docs/decision-log.md` — technical decisions with rationale
 - `docs/lesson-notes/` — the student's own notes (do not edit these)
 
+## Artifacts and Reset
+
+See RESET.md for a full guide to regenerating artifacts. Generated files (listed in .gitignore) can be rebuilt; files under `docs/`, `lessons/`, and the top-level `.md` docs should never be regenerated.
+
 ## Conventions
 
 - Python 3.11+

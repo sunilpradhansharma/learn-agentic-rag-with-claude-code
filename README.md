@@ -47,6 +47,32 @@ See [SETUP.md](./SETUP.md) for installation and verification steps.
 
 ---
 
+## Working through the course
+
+Work through the lessons in order. Each builds on the previous.
+
+**Before starting any lesson:**
+1. Read the lesson README completely.
+2. Copy `docs/lesson-notes/TEMPLATE.md` to `docs/lesson-notes/lesson-NN.md`.
+3. Fill in "My understanding before this lesson" — honest answers help you measure what you've learned.
+
+**While working through a lesson:**
+- Run Claude Code with the prompts given in the README.
+- Read every line of generated code. Ask Claude Code to explain anything unclear.
+- Update your lesson notes as you go — not at the end.
+
+**After completing a lesson:**
+- Fill in the remaining sections of your lesson notes.
+- Commit your work: `git add . && git commit -m "lesson NN complete"`.
+- Compare your outputs to `lessons/NN-name/solution/` if one exists.
+
+**If you get stuck:**
+- See [RESET.md](./RESET.md) for how to regenerate artifacts.
+- Ask Claude Code directly — it has context from CLAUDE.md.
+- Review the relevant `solution/` folder.
+
+---
+
 ## Course outline
 
 | Phase | Lesson | Title | Description |
