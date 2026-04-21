@@ -100,7 +100,3 @@ See [SETUP.md](./SETUP.md) for installation and verification steps.
 ```
 
 ---
-
-## License
-
-MIT License. See [LICENSE](./LICENSE) for details.
