@@ -202,6 +202,8 @@ Answer these questions in `docs/lesson-notes/lesson-04.md`:
 1. **Experiment with chunk sizes.** Edit `chunk_corpus.py`, change `CHUNK_SIZE` to 128, re-run, and note the total chunk count. Repeat for 1,024. Record all three counts (128, 512, 1,024) in `lesson-04.md` and describe the trade-off you observe.
 2. **Find an interesting chunk.** Open `data/corpus/chunks.jsonl` and scan through chunks from any filing. Find one that is particularly interesting — a dense risk-factor paragraph, a financial table fragment, a legal disclosure. Copy the chunk text into `lesson-04.md` and write 2 sentences: what question would this chunk be a good retrieval result for, and what question would it be a poor result for?
 
+   > **Tip:** To browse chunks in Python: `import json; chunks = [json.loads(line) for line in open('data/corpus/chunks.jsonl')]; print(chunks[50]['text'])`. Or open the file directly in your editor — each line is a self-contained JSON object.
+
 ---
 
 ## Stuck?

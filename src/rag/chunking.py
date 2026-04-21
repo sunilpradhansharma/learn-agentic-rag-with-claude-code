@@ -18,6 +18,9 @@ import os
 from typing import List, Dict
 import tiktoken
 
+# Relative import: tokenization.py lives in the same src/rag/ directory.
+# This works because callers (chunk_corpus.py, vector_store.py) add src/rag/
+# to sys.path before importing, and the __main__ block below does the same.
 from tokenization import count_tokens
 
 

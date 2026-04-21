@@ -153,7 +153,7 @@ class VectorStore:
 
         Returns:
             List of dicts, each with:
-              text, source_file, chunk_id, similarity_score (float 0–1)
+              text, source_file, chunk_id, similarity_score (float −1.0 to 1.0; 1.0 = identical direction, −1.0 = opposite; in practice SEC chunks score 0.2–0.75)
             Sorted from most to least similar.
         """
         # Embed the query to a (384,) vector.

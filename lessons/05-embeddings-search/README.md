@@ -40,7 +40,7 @@ Chroma is a simple, local-first vector store that requires no server. It stores 
 
 ### Why semantic search beats keyword search
 
-A keyword search for "How does Apple pay its executives?" would only return text containing the words "Apple", "pay", and "executives". It would miss a paragraph that says "compensation structure for named executive officers" — different words, identical meaning. Semantic search finds that paragraph because the embeddings for those two phrases land near each other in vector space. This is the core advantage of RAG over traditional document search.
+A keyword search for "How does Apple pay its executives?" would only return text containing the words "Apple", "pay", and "executives". It would miss a paragraph that says "compensation structure for named executive officers" — different words, identical meaning. Semantic search can find that paragraph *if it exists in the corpus*, because the embeddings for those two phrases land near each other in vector space. This is the core advantage of RAG over traditional document search — but it only helps when the right chunk was loaded and chunked in the first place.
 
 ---
 
@@ -102,7 +102,7 @@ The vector store wrapper is at `src/rag/vector_store.py`. Run it to embed all 48
 python src/rag/vector_store.py
 ```
 
-**The first run takes 1–3 minutes** — it embeds all 487 chunks. Subsequent runs skip the embedding step because Chroma already has the data on disk.
+**The first run takes 1–3 minutes** — the embedding model (~80 MB) is downloaded on first use, then all 487 chunks are converted to vectors one batch at a time. If you see no output for 30 seconds, it is still working. Subsequent runs skip this entirely because Chroma persists the vectors on disk.
 
 Expected output (first run):
 
@@ -138,31 +138,42 @@ Run the lesson exploration script to see all 6 queries at once:
 python lessons/05-embeddings-search/explore_search.py
 ```
 
-Expected output (similarity scores):
+Expected output (each query prints a NOTE line, a separator, top-3 results with text previews, then a verdict line):
 
 ```
 QUERY: How does Apple compensate its executives?
+NOTE:  Relevant — should surface executive pay language from Apple 10-K
+----------------------------------------------------------------------
   [1] score=0.5648 | file=apple_10k_2023.txt
+       text: 'equity 62,146 50,672 Total liabilities and shareholders' equity…'
+  [2] score=0.5402 | file=apple_10k_2023.txt
+       text: 'that may arise. Apple Inc. | 2023 Form 10-K | 12 The Company is subject…'
+  [3] score=0.5353 | file=apple_10k_2023.txt
+       text: 'could also affect what the Company charges developers for access…'
   → Top-1 score 0.5648: GOOD match
 
 QUERY: What are Tesla's main risk factors?
+NOTE:  Relevant — should surface risk factor disclosures from Tesla 10-K
+----------------------------------------------------------------------
   [1] score=0.5268 | file=tesla_10k_2023.txt
+       text: 'people or property. Any product liability claim may subject us…'
+  …
   → Top-1 score 0.5268: MARGINAL match
 
 QUERY: Microsoft cloud revenue growth
+NOTE:  Relevant — should surface Azure/cloud segment discussion from MSFT 10-K
+----------------------------------------------------------------------
   [1] score=0.7124 | file=microsoft_10k_2023.txt
+       text: 'of 5%, 5%, and 8%, respectively. Intelligent Cloud Revenue increased $12.9 billion or 17%…'
+  …
   → Top-1 score 0.7124: GOOD match
 
-QUERY: Who audits these companies?
-  [1] score=0.5514 | file=microsoft_10k_2023.txt
-  → Top-1 score 0.5514: GOOD match
-
-QUERY: Dividend policies and share buybacks
-  [1] score=0.4257 | file=apple_10k_2023.txt
-  → Top-1 score 0.4257: MARGINAL match
-
 QUERY: Recipe for chocolate chip cookies
+NOTE:  Off-topic — expect low scores; result will be irrelevant
+----------------------------------------------------------------------
   [1] score=0.2058 | file=apple_10k_2023.txt
+       text: '3 2022-09-24 0000320193 2021-09-25 0000320193 …'
+  …
   → Top-1 score 0.2058: POOR match (likely off-topic)
 ```
 

@@ -54,7 +54,7 @@ As you grade the probe results in Step 3, look for these specific patterns:
 - **Wrong retrieval** — the top-k chunks do not contain the answer; the model either refuses or hallucinates.
 - **Partial retrieval** — the answer spans multiple chunks, but only some were retrieved; the answer is incomplete.
 - **Hallucination** — the model fills in gaps despite the grounding instruction, presenting made-up facts confidently.
-- **Citation errors** — the model attributes a fact to the wrong source file.
+- **Citation errors** — the model attributes a fact to the wrong source file. Distinguished from partial retrieval: if the right fact is retrieved from file A but cited as file B, that is a citation error. If the fact was never retrieved at all, that is wrong or partial retrieval.
 - **Comparative questions** — "How does Apple's revenue compare to Microsoft's?" requires balanced retrieval from two filings; cosine search tends to favor one.
 - **Numerical precision** — the right chunk was retrieved, but the model misreads or rounds the number.
 - **Out-of-corpus questions** — the answer requires a year, company, or topic not in the corpus; the model should refuse but sometimes does not.
