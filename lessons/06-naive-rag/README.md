@@ -184,3 +184,9 @@ Answer these questions in `docs/lesson-notes/lesson-06.md`:
 ## What's next
 
 Phase 3 begins. In **Lesson 7** you will build a real evaluation framework so that every future improvement can be measured. In **Lesson 8** you will add RAGAS automated scoring. In **Lesson 9** you will improve retrieval quality — and every improvement will be measured against the failures you just logged here.
+
+---
+
+## Note: Auto-Graded Reference Results
+
+This repository includes a reference run of the probe questions auto-graded by Claude using an LLM-as-judge approach (see `auto_grade_probes.py`). The results are committed in `probe_results.md` and the failures are logged in `docs/failure-log.md`. You can compare your own graded results to these — but your judgment is the ground truth for your own learning, and LLM judges can disagree on borderline cases. This script also previews the LLM-as-judge pattern you will study properly in Lesson 8 (RAGAS).
