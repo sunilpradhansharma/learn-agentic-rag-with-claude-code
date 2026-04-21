@@ -62,10 +62,12 @@ RAGAS_HEADERS = ["Faithful.", "Ans.Rel.", "Ctx.Prec.", "Ctx.Rec."]
 class GroundedWrapper:
     """Thin wrapper that adds a groundedness check to AgenticRAG without retries.
 
-    If the generated answer is not grounded, prepend the low-confidence
-    warning and record the check in the "reflection" key of the return dict.
+    If the generated answer is not grounded, append a low-confidence warning
+    at the END of the answer and emit result["confidence"] = "low".
     No retrieval retries are performed.
     """
+
+    _WARNING = "[Low confidence — answer may not be fully grounded in source documents.]"
 
     def __init__(self, agentic: AgenticRAG) -> None:
         self._agentic = agentic
@@ -76,25 +78,27 @@ class GroundedWrapper:
     def answer(self, question: str) -> dict:
         result = self._agentic.answer(question)
 
-        # Build minimal chunk list for the groundedness check.
-        # Use text_preview (already in retrieved_chunks) since retrieve() full
-        # text isn't stored in the answer dict.
+        # Groundedness must be checked against full chunk text.
+        # Using 200-char previews causes false-positive ungroundedness flags
+        # on almost every answer because truncated chunks look less complete.
+        full_chunks = self._agentic.retrieve(question)
         chunks_for_check = [
             {
-                "text": c.get("text_preview", ""),
+                "text": c.get("text", c.get("text_preview", "")),
                 "chunk_id": c["chunk_id"],
                 "source_file": c["source_file"],
             }
-            for c in result["retrieved_chunks"]
+            for c in full_chunks
         ]
         gcheck = check_groundedness(question, result["answer"], chunks_for_check)
 
-        if gcheck.get("grounded") is False:
-            result["answer"] = (
-                "[Low confidence — answer may not be fully grounded in source documents.]\n\n"
-                + result["answer"]
-            )
+        confidence = "low" if gcheck.get("grounded") is False else "high"
+        if confidence == "low":
+            # Append warning at end — NOT prepended — so RAGAS answer_relevancy
+            # generates questions from the actual answer content, not the disclaimer.
+            result["answer"] = result["answer"] + "\n\n" + self._WARNING
 
+        result["confidence"] = confidence
         result["reflection"] = {
             "total_retries": 0,
             "attempts": [],
@@ -409,7 +413,7 @@ def main() -> None:
         (
             "grade_only", "J grade_only",
             CorrectiveRAG(**_base_kwargs, max_retries=1, groundedness_check=False,
-                          relevance_threshold="mixed"),
+                          relevance_threshold="all_correct"),
         ),
         (
             "grounded_only", "K grounded_only",
@@ -418,7 +422,7 @@ def main() -> None:
         (
             "full_crag", "L full_crag",
             CorrectiveRAG(**_base_kwargs, max_retries=1, groundedness_check=True,
-                          relevance_threshold="mixed"),
+                          relevance_threshold="all_correct"),
         ),
     ]
 

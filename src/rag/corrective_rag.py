@@ -101,7 +101,13 @@ class CorrectiveRAG:
         rewrite_strategy: str = "auto",
         max_retries: int = 1,
         groundedness_check: bool = True,
-        relevance_threshold: str = "mixed",
+        # A threshold of "mixed" triggers retry whenever fewer than 80% of chunks are
+        # CORRECT. With k=5 retrieval, 3/5 CORRECT (60%) is a normal and adequate
+        # retrieval state that usually answers the question correctly. "mixed" therefore
+        # triggers retries on most questions without improving answer quality.
+        # "all_correct" means "only retry when at least 50% of chunks are actively
+        # INCORRECT" — a more reliable signal that retrieval genuinely failed.
+        relevance_threshold: str = "all_correct",
         model: str = "claude-sonnet-4-5",
     ) -> None:
         """Initialize the corrective pipeline.
@@ -117,8 +123,12 @@ class CorrectiveRAG:
                                  0 = grade but never retry; 1 = retry once (default).
             groundedness_check:  Whether to verify the generated answer is grounded.
             relevance_threshold: When to trigger a retry:
-                                   "all_correct"  — retry only if aggregate is mostly_incorrect
-                                   "mixed"        — retry if aggregate is mixed OR mostly_incorrect
+                                   "all_correct" (default) — retry only if ≥50% of chunks
+                                     are INCORRECT (a genuine retrieval failure). This is
+                                     the right default because "mixed" (3/5 CORRECT) is
+                                     normal for k=5 retrieval and does not warrant a retry.
+                                   "mixed" — retry if aggregate is mixed OR mostly_incorrect
+                                     (only use if you want aggressive correction at high cost).
             model:               Claude model for generation AND reflection calls.
         """
         self.k = k
