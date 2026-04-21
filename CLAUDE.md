@@ -51,6 +51,7 @@ The lessons are written for a learner new to AI/ML. When generating lesson conte
 - Run naive RAG: `python src/rag/naive_rag.py`
 - Probe naive RAG: `python lessons/06-naive-rag/probe_naive_rag.py`
 - Auto-grade probes: `python lessons/06-naive-rag/auto_grade_probes.py`
+- Run baseline eval: `python lessons/07-handrolled-evals/run_baseline_eval.py`
 
 ## Files I Should Never Edit
 

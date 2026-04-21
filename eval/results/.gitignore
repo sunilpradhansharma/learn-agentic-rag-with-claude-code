@@ -1,0 +1,4 @@
+# Ignore generated result files — they are large and change every run.
+# The summary JSON files are committed manually after significant runs.
+*.jsonl
+!.gitignore

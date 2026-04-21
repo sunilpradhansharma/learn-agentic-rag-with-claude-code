@@ -6,6 +6,7 @@ __pycache__/
 .vscode/
 .idea/
 eval/results/*.json
+!eval/results/*_summary.json
 data/corpus/chunks.jsonl
 *.db
 chroma_db/
