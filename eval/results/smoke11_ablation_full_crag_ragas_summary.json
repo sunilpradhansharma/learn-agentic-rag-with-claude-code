@@ -1,20 +1,20 @@
 {
-  "run_name": "smoke11_ablation_l10_agentic",
-  "timestamp": "2026-04-21T19:11:41.143092Z",
+  "run_name": "smoke11_ablation_full_crag",
+  "timestamp": "2026-04-21T19:35:51.493381Z",
   "metrics": {
     "faithfulness": {
-      "mean": 0.8325,
-      "std": 0.162,
+      "mean": 0.7723,
+      "std": 0.2841,
       "n": 10
     },
     "answer_relevancy": {
-      "mean": 0.6822,
-      "std": 0.4473,
+      "mean": 0.2911,
+      "std": 0.4449,
       "n": 10
     },
     "llm_context_precision_with_reference": {
-      "mean": 0.3921,
-      "std": 0.349,
+      "mean": 0.4032,
+      "std": 0.3498,
       "n": 10
     },
     "context_recall": {
@@ -25,49 +25,49 @@
   },
   "by_category": {
     "comparative": {
-      "faithfulness": 0.7375,
+      "faithfulness": 0.9166,
       "answer_relevancy": 0.4713,
       "llm_context_precision_with_reference": 0.0,
       "context_recall": 0.1666
     },
     "factual_lookup": {
-      "faithfulness": 0.875,
+      "faithfulness": 1.0,
       "answer_relevancy": 0.9843,
       "llm_context_precision_with_reference": 0.8604,
       "context_recall": 0.75
     },
     "list_extraction": {
-      "faithfulness": 0.775,
-      "answer_relevancy": 0.5,
+      "faithfulness": 0.4642,
+      "answer_relevancy": 0.0,
       "llm_context_precision_with_reference": 0.2084,
       "context_recall": 0.5
     },
     "multi_hop": {
       "faithfulness": 1.0,
-      "answer_relevancy": 0.9927,
+      "answer_relevancy": 0.0,
       "llm_context_precision_with_reference": 0.25,
       "context_recall": 1.0
     },
     "numerical": {
       "faithfulness": 0.75,
-      "answer_relevancy": 1.0,
+      "answer_relevancy": 0.0,
       "llm_context_precision_with_reference": 0.25,
       "context_recall": 0.3333
     },
     "refusal_required": {
-      "faithfulness": 0.8,
+      "faithfulness": 0.75,
       "answer_relevancy": 0.0,
-      "llm_context_precision_with_reference": 0.3667,
+      "llm_context_precision_with_reference": 0.4778,
       "context_recall": 1.0
     },
     "risk_analysis": {
-      "faithfulness": 1.0,
-      "answer_relevancy": 0.9178,
+      "faithfulness": 0.4615,
+      "answer_relevancy": 0.0,
       "llm_context_precision_with_reference": 0.9167,
       "context_recall": 1.0
     }
   },
   "sample_count": 10,
   "judge_model": "claude-haiku-4-5-20251001",
-  "detail_path": "/Users/sucandra_dasa/Documents/Sucandra-Mac/github/learn-agentic-rag-with-claude-code/eval/results/smoke11_ablation_l10_agentic_ragas_detail.jsonl"
+  "detail_path": "/Users/sucandra_dasa/Documents/Sucandra-Mac/github/learn-agentic-rag-with-claude-code/eval/results/smoke11_ablation_full_crag_ragas_detail.jsonl"
 }

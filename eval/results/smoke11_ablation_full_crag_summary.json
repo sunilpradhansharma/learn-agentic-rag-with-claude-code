@@ -1,6 +1,6 @@
 {
-  "run_name": "smoke11_ablation_l10_agentic",
-  "generated": "2026-04-21T19:12:57.588286Z",
+  "run_name": "smoke11_ablation_full_crag",
+  "generated": "2026-04-21T19:39:23.449632Z",
   "total": 10,
   "grade_counts": {
     "PASS": 9,
@@ -58,5 +58,5 @@
   "failure_modes": {
     "partial_retrieval": 1
   },
-  "detail_path": "/Users/sucandra_dasa/Documents/Sucandra-Mac/github/learn-agentic-rag-with-claude-code/eval/results/smoke11_ablation_l10_agentic_detail.jsonl"
+  "detail_path": "/Users/sucandra_dasa/Documents/Sucandra-Mac/github/learn-agentic-rag-with-claude-code/eval/results/smoke11_ablation_full_crag_detail.jsonl"
 }

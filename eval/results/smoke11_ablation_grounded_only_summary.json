@@ -1,16 +1,16 @@
 {
-  "run_name": "smoke11_ablation_l10_agentic",
-  "generated": "2026-04-21T19:12:57.588286Z",
+  "run_name": "smoke11_ablation_grounded_only",
+  "generated": "2026-04-21T19:28:36.496258Z",
   "total": 10,
   "grade_counts": {
-    "PASS": 9,
+    "PASS": 8,
     "PARTIAL": 1,
-    "FAIL": 0,
+    "FAIL": 1,
     "UNKNOWN": 0
   },
-  "pass_rate": 0.9,
+  "pass_rate": 0.8,
   "partial_rate": 0.1,
-  "fail_rate": 0.0,
+  "fail_rate": 0.1,
   "category_counts": {
     "comparative": {
       "PASS": 1,
@@ -25,9 +25,9 @@
       "UNKNOWN": 0
     },
     "list_extraction": {
-      "PASS": 2,
+      "PASS": 1,
       "PARTIAL": 0,
-      "FAIL": 0,
+      "FAIL": 1,
       "UNKNOWN": 0
     },
     "multi_hop": {
@@ -56,7 +56,7 @@
     }
   },
   "failure_modes": {
-    "partial_retrieval": 1
+    "partial_retrieval": 2
   },
-  "detail_path": "/Users/sucandra_dasa/Documents/Sucandra-Mac/github/learn-agentic-rag-with-claude-code/eval/results/smoke11_ablation_l10_agentic_detail.jsonl"
+  "detail_path": "/Users/sucandra_dasa/Documents/Sucandra-Mac/github/learn-agentic-rag-with-claude-code/eval/results/smoke11_ablation_grounded_only_detail.jsonl"
 }

@@ -8,6 +8,31 @@
 
 ---
 
+## Outcome note (spoiler)
+
+On this specific corpus (2023 10-K filings from Apple, Microsoft,
+and Tesla) with the Lesson 10 AgenticRAG baseline, self-reflection
+did not produce a measurable improvement in L7 pass rate on the
+10-question smoke set. This is a genuine experimental result, not
+a failure of the technique — reflection's benefits are most
+visible on noisier corpora where initial retrieval frequently
+fails. On our corpus, retrieval quality is already high enough
+after L9 (hybrid + rerank) and L10 (query rewriting) that
+reflection rarely finds something to correct.
+
+This lesson is still worth completing. You will learn:
+- How to build a relevance grader and groundedness checker
+- How to wire a retry loop with graceful degradation
+- How to recognize when additional agentic steps are not earning
+  their keep
+- How to read metric patterns to diagnose whether a change is
+  helping
+
+The techniques here remain correct and useful — just not for this
+particular combination of corpus and upstream pipeline.
+
+---
+
 ## Why this lesson exists
 
 Lesson 10 made the system smarter *before* retrieval: it classifies the
