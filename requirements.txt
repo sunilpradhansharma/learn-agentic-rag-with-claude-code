@@ -26,3 +26,7 @@ langchain-community>=0.2.0
 
 # Added in Lesson 9
 rank-bm25>=0.2.2
+
+# Added in Lesson 12 (optional: uncomment to enable web search via Tavily)
+# Requires TAVILY_API_KEY in .env — see lessons/12-tool-use/README.md
+# tavily-python>=0.3.0

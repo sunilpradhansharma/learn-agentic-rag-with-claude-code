@@ -1,0 +1,62 @@
+{
+  "run_name": "smoke10_ablation_hyde",
+  "generated": "2026-04-21T17:07:59.293528Z",
+  "total": 10,
+  "grade_counts": {
+    "PASS": 9,
+    "PARTIAL": 1,
+    "FAIL": 0,
+    "UNKNOWN": 0
+  },
+  "pass_rate": 0.9,
+  "partial_rate": 0.1,
+  "fail_rate": 0.0,
+  "category_counts": {
+    "comparative": {
+      "PASS": 1,
+      "PARTIAL": 1,
+      "FAIL": 0,
+      "UNKNOWN": 0
+    },
+    "factual_lookup": {
+      "PASS": 2,
+      "PARTIAL": 0,
+      "FAIL": 0,
+      "UNKNOWN": 0
+    },
+    "list_extraction": {
+      "PASS": 2,
+      "PARTIAL": 0,
+      "FAIL": 0,
+      "UNKNOWN": 0
+    },
+    "multi_hop": {
+      "PASS": 1,
+      "PARTIAL": 0,
+      "FAIL": 0,
+      "UNKNOWN": 0
+    },
+    "numerical": {
+      "PASS": 1,
+      "PARTIAL": 0,
+      "FAIL": 0,
+      "UNKNOWN": 0
+    },
+    "refusal_required": {
+      "PASS": 1,
+      "PARTIAL": 0,
+      "FAIL": 0,
+      "UNKNOWN": 0
+    },
+    "risk_analysis": {
+      "PASS": 1,
+      "PARTIAL": 0,
+      "FAIL": 0,
+      "UNKNOWN": 0
+    }
+  },
+  "failure_modes": {
+    "partial_retrieval": 1
+  },
+  "detail_path": "/Users/sucandra_dasa/Documents/Sucandra-Mac/github/learn-agentic-rag-with-claude-code/eval/results/smoke10_ablation_hyde_detail.jsonl"
+}

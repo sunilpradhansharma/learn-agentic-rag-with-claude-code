@@ -1,0 +1,73 @@
+{
+  "run_name": "smoke10_ablation_multi_query",
+  "timestamp": "2026-04-21T17:13:18.342316Z",
+  "metrics": {
+    "faithfulness": {
+      "mean": 0.8878,
+      "std": 0.1444,
+      "n": 10
+    },
+    "answer_relevancy": {
+      "mean": 0.674,
+      "std": 0.4434,
+      "n": 10
+    },
+    "llm_context_precision_with_reference": {
+      "mean": 0.4838,
+      "std": 0.412,
+      "n": 10
+    },
+    "context_recall": {
+      "mean": 0.5167,
+      "std": 0.4246,
+      "n": 10
+    }
+  },
+  "by_category": {
+    "comparative": {
+      "faithfulness": 0.6889,
+      "answer_relevancy": 0.4268,
+      "llm_context_precision_with_reference": 0.0,
+      "context_recall": 0.1666
+    },
+    "factual_lookup": {
+      "faithfulness": 0.875,
+      "answer_relevancy": 0.9843,
+      "llm_context_precision_with_reference": 0.9437,
+      "context_recall": 0.75
+    },
+    "list_extraction": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.5,
+      "llm_context_precision_with_reference": 0.7667,
+      "context_recall": 0.5
+    },
+    "multi_hop": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "llm_context_precision_with_reference": 0.25,
+      "context_recall": 1.0
+    },
+    "numerical": {
+      "faithfulness": 0.75,
+      "answer_relevancy": 1.0,
+      "llm_context_precision_with_reference": 0.25,
+      "context_recall": 0.3333
+    },
+    "refusal_required": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.0,
+      "llm_context_precision_with_reference": 0.0,
+      "context_recall": 1.0
+    },
+    "risk_analysis": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.9178,
+      "llm_context_precision_with_reference": 0.9167,
+      "context_recall": 0.0
+    }
+  },
+  "sample_count": 10,
+  "judge_model": "claude-haiku-4-5-20251001",
+  "detail_path": "/Users/sucandra_dasa/Documents/Sucandra-Mac/github/learn-agentic-rag-with-claude-code/eval/results/smoke10_ablation_multi_query_ragas_detail.jsonl"
+}
