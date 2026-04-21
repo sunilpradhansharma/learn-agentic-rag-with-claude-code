@@ -5,3 +5,11 @@ python-dotenv>=1.0.0
 # Added in Lesson 3
 sentence-transformers>=2.2.0
 numpy>=1.24.0
+
+# Added in Lesson 4
+tiktoken>=0.7.0
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+
+# Added in Lesson 5
+chromadb>=0.4.22

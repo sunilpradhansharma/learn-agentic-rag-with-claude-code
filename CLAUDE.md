@@ -40,7 +40,12 @@ The lessons are written for a learner new to AI/ML. When generating lesson conte
 - Activate venv: `source venv/bin/activate` (Windows: `venv\Scripts\activate`)
 - Install deps: `pip install -r requirements.txt`
 - Run Lesson 3 tiny RAG: `python lessons/03-tiny-rag/tiny_rag.py`
-- *(More commands added as the course progresses)*
+- Download SEC corpus: `python src/rag/download_corpus.py`
+- Chunk corpus: `python lessons/04-loading-chunking/chunk_corpus.py`
+- Build vector store: `python src/rag/vector_store.py`
+- Explore search: `python lessons/05-embeddings-search/explore_search.py`
+- Run naive RAG: `python src/rag/naive_rag.py`
+- Probe naive RAG: `python lessons/06-naive-rag/probe_naive_rag.py`
 
 ## Files I Should Never Edit
 

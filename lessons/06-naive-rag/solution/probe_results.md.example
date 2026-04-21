@@ -1,0 +1,58 @@
+# Lesson 6 — Probe Results (EXAMPLE — for reference only)
+
+This file shows what a completed `probe_results.md` might look like after
+manual grading. Your answers and grades may differ.
+
+Fill in the **Pass/Fail/Partial** and **Failure mode** columns after
+reading each answer.
+
+Failure modes (from the Concepts section of the lesson README):
+- **wrong retrieval** — top-k chunks don't contain the answer
+- **partial retrieval** — answer spans chunks but only some retrieved
+- **hallucination** — model fills in gaps despite grounding instructions
+- **citation error** — model attributes facts to the wrong source
+- **comparative** — question requires data from two filings
+- **numerical precision** — right chunk retrieved, number misread
+- **out-of-corpus** — year or company not in the corpus
+
+---
+
+| Q# | Question | Answer (truncated) | Retrieved Sources | Pass/Fail/Partial | Failure mode |
+| --- | --- | --- | --- | --- | --- |
+| 1 | What was Apple's total net sales in fiscal 2023? | Apple's total net sales in fiscal year 2023 were $383.3 billion [apple_10k_2023.txt]. | apple | **Pass** | |
+| 2 | What is Tesla's primary manufacturing location in the US? | According to the provided documents, Tesla's primary manufacturing location in the US is Fremont, California [tesla_10k_2023.txt]. | tesla | **Pass** | |
+| 3 | What percentage of Microsoft's revenue comes from cloud? | The provided documents indicate that Microsoft's Intelligent Cloud segment revenue was approximately $87.9 billion, representing about 43% of total revenue [microsoft_10k_2023.txt]. | microsoft | **Partial** | numerical precision |
+| 4 | Compare Apple's 2023 revenue to Tesla's 2023 revenue. | Apple reported total net sales of $383.3 billion in fiscal 2023 [apple_10k_2023.txt]. The provided documents do not contain sufficient detail about Tesla's total revenue to make a direct comparison. | apple | **Partial** | comparative |
+| 5 | What are the top three risk factors Apple lists? | Apple lists the following among its primary risk factors: (1) global and regional economic conditions, (2) competition in its markets, and (3) dependence on component and product manufacturing [apple_10k_2023.txt]. | apple | **Pass** | |
+| 6 | Who serves on Tesla's board of directors? | The provided documents do not contain this information. | tesla | **Fail** | wrong retrieval |
+| 7 | How many employees does Microsoft have? | As of June 30, 2023, Microsoft had approximately 221,000 full-time employees [microsoft_10k_2023.txt]. | microsoft | **Pass** | |
+| 8 | What was Apple's revenue in 2019? | The provided documents do not contain this information. Our corpus covers Apple's fiscal year 2023 10-K filing only. | apple | **Pass** *(at refusing)* | out-of-corpus |
+| 9 | Does Tesla pay a dividend? | According to the provided documents, Tesla has never declared or paid cash dividends on its common stock and does not anticipate paying any cash dividends [tesla_10k_2023.txt]. | tesla | **Pass** | |
+| 10 | What is the weather today in San Francisco? | The provided documents do not contain this information. | apple | **Pass** *(at refusing)* | out-of-corpus |
+
+---
+
+## Notes on this example
+
+**Q3 — Partial / numerical precision:** The retrieved chunks mentioned Intelligent Cloud
+revenue numbers, but the exact percentage of total revenue requires dividing two numbers —
+a calculation the model did correctly here but may get wrong if both numbers don't appear
+in the same chunk.
+
+**Q4 — Partial / comparative:** This is the most instructive failure. Cosine search
+returned chunks mostly from Apple because the query phrasing ("Apple's 2023 revenue")
+gave Apple-flavored chunks higher similarity scores. Tesla was underrepresented, so the
+model had to refuse on the Tesla half. Lesson 10 (query rewriting) addresses this.
+
+**Q6 — Fail / wrong retrieval:** Board composition is usually in the proxy statement
+(DEF 14A), not the 10-K body. Our corpus only contains 10-Ks, so the right information
+was never chunked. This is a corpus design failure, not a retrieval algorithm failure.
+
+**Q8 and Q10 — "Pass at refusing":** The system correctly identifies that it cannot answer.
+This is the grounding instruction working. The failure mode is *out-of-corpus* but the
+behavior is correct — so we grade it Pass.
+
+---
+
+*This is an example file. Your actual probe_results.md will have the real
+answers from your Claude run. The grades here are illustrative.*

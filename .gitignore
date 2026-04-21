@@ -6,8 +6,10 @@ __pycache__/
 .vscode/
 .idea/
 eval/results/*.json
+data/corpus/chunks.jsonl
 *.db
 chroma_db/
+data/corpus/chroma_db/
 .pytest_cache/
 dist/
 build/
