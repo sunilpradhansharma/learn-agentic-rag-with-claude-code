@@ -338,3 +338,64 @@ You'll learn to delegate parts of the RAG development workflow itself to
 specialized sub-agents, then in Lessons 14–15 you'll rebuild what you've
 made here as a LangGraph-orchestrated multi-agent system. The observability
 layer (Lesson 16) and guardrails (Lesson 17) complete the production-ready picture.
+
+---
+
+## Outcome note and homework
+
+This lesson's evaluation showed the agent underperformed the Lesson 10
+baseline on L7 pass rate (0.767 vs 0.900). Six comparative questions
+(q014, q015, q016, q017, q025, q026) failed with technical errors in the
+agent configurations, but q014, q016, and q026 passed in the Lesson 10
+pipeline.
+
+The root cause is a composition bug: the `search_sec_filings` tool wraps
+`CorrectiveRAG`, which in turn wraps the underlying vector store without
+using query rewriting. When the agent sends a comparative question to the
+tool, the tool performs plain retrieval — the auto-rewrite logic that
+Lesson 10 built is not invoked.
+
+This is a valuable learning moment. **Agent tools inherit the behavior of
+their handlers, not of upstream improvements you might expect them to
+inherit.** If you want your agent to benefit from a technique, the technique
+must be inside the tool handler or applied at the agent's routing layer.
+
+### Homework exercise
+
+Fix the composition. In `src/rag/tools.py`, change the `search_sec_filings`
+tool handler to wrap `AgenticRAG` with `rewrite_strategy="auto"` instead
+of its current `CorrectiveRAG` handler.
+
+Re-run the evaluation:
+
+```
+python lessons/12-tool-use/evaluate_agent.py
+```
+
+If your fix is correct, you should see Config N's L7 pass rate recover
+toward the Lesson 10 baseline (0.900). Specifically:
+- **q014** (Apple vs Tesla revenue comparison) and **q016** (Tesla vs
+  Microsoft revenue) should switch from FAIL to PASS — these were fixed
+  by `rewrite_strategy="auto"` in Lesson 10.
+- **q025** and **q026** may remain partial: they require the agent to make
+  two or three sequential `search_sec_filings` calls (one per company),
+  consuming multiple iterations before synthesis.
+
+**Hint**: In `src/rag/tools.py`, replace the `CorrectiveRAG` import and the
+`_crag` singleton with an `AgenticRAG` instance using
+`rewrite_strategy="auto"`. Both classes expose the same `answer()` and
+`retrieve()` interface, so `_handle_search_sec_filings` needs only a
+two-line change.
+
+After re-running, answer these questions in `docs/lesson-notes/lesson-12.md`:
+
+1. What are the new L7 pass rates for Configs N and O? Did they match or
+   beat the Lesson 10 baseline (0.900)?
+2. Which of the six failing comparative questions (q014, q015, q016, q017,
+   q025, q026) now pass? Which still fail, and why?
+3. What was the cost in terms of average iterations or tools called per
+   question?
+4. Does this change the verdict on tool use for this corpus? Is tool use
+   now a net positive, net negative, or comparable to L10?
+5. What's one question you would add to the corpus or the golden set where
+   tool use should clearly beat a plain pipeline?

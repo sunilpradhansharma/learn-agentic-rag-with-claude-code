@@ -1,0 +1,63 @@
+{
+  "run_name": "full12_agent_agent_rag_only",
+  "generated": "2026-04-22T12:58:17.073528Z",
+  "total": 30,
+  "grade_counts": {
+    "PASS": 24,
+    "PARTIAL": 0,
+    "FAIL": 6,
+    "UNKNOWN": 0
+  },
+  "pass_rate": 0.8,
+  "partial_rate": 0.0,
+  "fail_rate": 0.2,
+  "category_counts": {
+    "factual_lookup": {
+      "PASS": 8,
+      "PARTIAL": 0,
+      "FAIL": 0,
+      "UNKNOWN": 0
+    },
+    "numerical": {
+      "PASS": 5,
+      "PARTIAL": 0,
+      "FAIL": 0,
+      "UNKNOWN": 0
+    },
+    "comparative": {
+      "PASS": 0,
+      "PARTIAL": 0,
+      "FAIL": 4,
+      "UNKNOWN": 0
+    },
+    "list_extraction": {
+      "PASS": 4,
+      "PARTIAL": 0,
+      "FAIL": 0,
+      "UNKNOWN": 0
+    },
+    "risk_analysis": {
+      "PASS": 2,
+      "PARTIAL": 0,
+      "FAIL": 0,
+      "UNKNOWN": 0
+    },
+    "multi_hop": {
+      "PASS": 2,
+      "PARTIAL": 0,
+      "FAIL": 2,
+      "UNKNOWN": 0
+    },
+    "refusal_required": {
+      "PASS": 3,
+      "PARTIAL": 0,
+      "FAIL": 0,
+      "UNKNOWN": 0
+    }
+  },
+  "failure_modes": {
+    "wrong_retrieval": 4,
+    "out_of_corpus_failure": 2
+  },
+  "detail_path": "/Users/sucandra_dasa/Documents/Sucandra-Mac/github/learn-agentic-rag-with-claude-code/eval/results/full12_agent_agent_rag_only_detail.jsonl"
+}

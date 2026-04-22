@@ -1,0 +1,73 @@
+{
+  "run_name": "full12_agent_agent_rag_only",
+  "timestamp": "2026-04-22T12:41:11.036609Z",
+  "metrics": {
+    "faithfulness": {
+      "mean": 0.6057,
+      "std": 0.4164,
+      "n": 30
+    },
+    "answer_relevancy": {
+      "mean": 0.624,
+      "std": 0.4449,
+      "n": 30
+    },
+    "llm_context_precision_with_reference": {
+      "mean": 0.5114,
+      "std": 0.3402,
+      "n": 30
+    },
+    "context_recall": {
+      "mean": 0.7056,
+      "std": 0.4098,
+      "n": 30
+    }
+  },
+  "by_category": {
+    "comparative": {
+      "faithfulness": 0.0,
+      "answer_relevancy": 0.0,
+      "llm_context_precision_with_reference": 0.0,
+      "context_recall": 0.0833
+    },
+    "factual_lookup": {
+      "faithfulness": 0.7647,
+      "answer_relevancy": 0.9482,
+      "llm_context_precision_with_reference": 0.7361,
+      "context_recall": 0.8125
+    },
+    "list_extraction": {
+      "faithfulness": 0.966,
+      "answer_relevancy": 0.8807,
+      "llm_context_precision_with_reference": 0.5535,
+      "context_recall": 0.875
+    },
+    "multi_hop": {
+      "faithfulness": 0.4292,
+      "answer_relevancy": 0.4579,
+      "llm_context_precision_with_reference": 0.2583,
+      "context_recall": 0.75
+    },
+    "numerical": {
+      "faithfulness": 0.975,
+      "answer_relevancy": 0.9625,
+      "llm_context_precision_with_reference": 0.6108,
+      "context_recall": 0.7667
+    },
+    "refusal_required": {
+      "faithfulness": 0.3728,
+      "answer_relevancy": 0.0,
+      "llm_context_precision_with_reference": 0.5222,
+      "context_recall": 0.6667
+    },
+    "risk_analysis": {
+      "faithfulness": 0.2394,
+      "answer_relevancy": 0.4832,
+      "llm_context_precision_with_reference": 0.7931,
+      "context_recall": 1.0
+    }
+  },
+  "sample_count": 30,
+  "judge_model": "claude-haiku-4-5-20251001",
+  "detail_path": "/Users/sucandra_dasa/Documents/Sucandra-Mac/github/learn-agentic-rag-with-claude-code/eval/results/full12_agent_agent_rag_only_ragas_detail.jsonl"
+}
