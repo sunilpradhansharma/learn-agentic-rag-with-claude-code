@@ -20,3 +20,20 @@ pipeline, reflection does not earn its latency cost. The Lesson
 11 techniques remain available in src/rag/reflection.py and
 src/rag/corrective_rag.py for corpora where initial retrieval is
 less reliable.
+
+## Note (end of Lesson 12)
+
+Lesson 12 added a tool-using agent. Full eval showed the agent
+underperformed the Lesson 10 baseline, with six comparative
+questions (q014, q015, q016, q017, q025, q026) failing in agent
+mode but passing in L10 mode. Root cause is a composition bug
+in the search_sec_filings tool handler — it wraps CorrectiveRAG,
+which does not invoke L10's query rewriting. The agent therefore
+loses the fix that Lesson 10 applied to comparative questions.
+
+Fix is deferred to student homework (see lessons/12-tool-use/README.md
+homework section). Consequently, q016 — which was resolved by L10 —
+is effectively re-failing in the L12 agent configuration. No new
+failure-log row is added because the root cause is known, the fix
+is a two-line change in src/rag/tools.py, and the failure is
+reproducible by toggling the tool handler wrapping.
